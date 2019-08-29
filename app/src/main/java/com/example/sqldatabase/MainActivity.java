@@ -1,7 +1,9 @@
 package com.example.sqldatabase;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     EditText editRollno,editName,editMarks;
     Button btnAdd,btnDelete,btnModify,btnView,btnViewAll,btnShow;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnViewAll.setOnClickListener(this);
         btnShow.setOnClickListener(this);
 
+        db=openOrCreateDatabase("StudentDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS student(rollno VARCHAR,name VARCHAR ,marks VARCHAR)");
+
     }
 
     @Override
@@ -42,7 +48,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch(v.getId())
         {
+
             case R.id.buttonAdd:
+                if(editRollno.getText().toString().trim().length()==0||editName.getText().toString().trim().length()==0||editMarks.getText().toString().trim().length()==0)
+                {
+                    Toast.makeText(this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                    shwmsg("Error","Invalid Input");
+                    return;
+                }
+                clearText();
                 Toast.makeText(this, "Add", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -67,5 +81,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+    }
+
+    private void clearText() {
+
+        editMarks.setText("");
+        editName.setText("");
+        editRollno.setText("");
+    }
+
+    private void shwmsg(String title, String msg) {
+        AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
+        alertDialog.setCancelable(true);
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(msg);
+        alertDialog.setIcon(R.mipmap.ic_launcher_round);
+        alertDialog.show();
     }
 }
